@@ -17,8 +17,8 @@ using namespace std::chrono_literals;
 
 struct BlockedTask
 {
-    std::coroutine_handle<>					handle;
-    std::chrono::steady_clock::time_point	deadline;
+	std::coroutine_handle<>					handle;
+	std::chrono::steady_clock::time_point	deadline;
 };
 
 struct Task
@@ -27,17 +27,19 @@ struct Task
 	{
 		Task get_return_object()
 		{
-			return Task{std::coroutine_handle<promise_type>::from_promise(*this)};
+			return Task{ std::coroutine_handle<promise_type>::from_promise(*this) };
 		}
 		std::suspend_always initial_suspend() { return {}; }
 		std::suspend_always final_suspend() noexcept { return {}; }
 		void return_void() {}
 		void unhandled_exception() { std::terminate(); }
-    };
+	};
 
-    std::coroutine_handle<promise_type> handle;
+	std::coroutine_handle<promise_type> handle;
 
-    Task(std::coroutine_handle<promise_type> h) : handle(h) {}
+	Task(std::coroutine_handle<promise_type> h) : handle(h) 
+	{
+	}
 
 	~Task() 
 	{
@@ -68,17 +70,17 @@ typedef uint32_t UBaseType_t;
 typedef uint32_t configSTACK_DEPTH_TYPE;
 typedef std::coroutine_handle<> TaskHandle_t;
 
-#define xTaskCreate( pvTaskCode,                             \
-                         pcName,                             \
-						uxStackDepth, \
-                         pvParameters,                       \
-                          uxPriority,                        \
-                          pxCreatedTask                     \
-                       )                                     \
-					   Task pvTaskCode ## code = pvTaskCode(); \
-					   *pxCreatedTask = pvTaskCode ## code.handle; \
-					   
-					   
+#define xTaskCreate( pvTaskCode,							\
+						pcName,								\
+						uxStackDepth,						\
+						pvParameters,						\
+						uxPriority,							\
+						pxCreatedTask						\
+					)										\
+					   Task pvTaskCode ## code = pvTaskCode();	\
+					   *pxCreatedTask = pvTaskCode ## code.handle;
+
+
 void vTaskResume( TaskHandle_t xTaskToResume );
 void vTaskStartScheduler();
 
